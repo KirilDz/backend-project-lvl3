@@ -1,5 +1,11 @@
 import axios from "axios";
 import fs from 'fs';
+import * as path from "path";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const url = 'https://ru.hexlet.io/courses';
 
@@ -10,22 +16,24 @@ export const getFileName = (url) => {
     return url.replace(httpsString, '').replace(symbolsForReplacing, '-');
 }
 
-export const saveFile = (url, data) => {
+export const saveFile = (url, data, folder = 'saved', isTest = false) => {
     const fileName = getFileName(url);
 
-    fs.writeFile(fileName + '.html', data, (err) => {
-        if (err) console.log(err);
-        // console.log('Writing is completed!');
-    })
+    const pathToFile = path.join(__dirname, '..', folder, fileName + '.html');
+
+    fs.writeFile(isTest ? folder : pathToFile, data, (err) => {
+        if (err) return err;
+        return 'success';
+    });
 }
 
-export const load2 = (url) => {
+export const getPageData = (url) => {
     return new Promise(resolve => {
         resolve(axios.get(url));
     })
 }
 
-// load2(url).then(res => {
+// getPageData(url).then(res => {
 //     saveFile(url, res.data);
 // }).catch(e => console.log(e));
 

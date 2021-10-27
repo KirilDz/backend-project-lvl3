@@ -1,7 +1,7 @@
-import { load2, saveFile } from "./src/temp.js";
+import { getPageData, saveFile } from "./src/temp.js";
 
 const testLogic = (url) => {
-    load2(url).then(data => {
+    getPageData(url).then(data => {
 
        saveFile(url, data.data);
 
