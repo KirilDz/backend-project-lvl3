@@ -37,7 +37,7 @@ test('Test main flow', async () => {
 
     await getPageData(url);
 
-     fs.writeFileSync(path.join(tempFolder, fileName + '.html'));
+     await saveFile(url, responseData, tempFolder);
 
     const isExist = fs.existsSync(path.join(tempFolder, fileName + '.html'));
 
