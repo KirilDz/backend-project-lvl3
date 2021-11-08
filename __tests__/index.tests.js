@@ -2,10 +2,13 @@ import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import { test, expect } from '@jest/globals';
 import * as path from "path";
-import fs from 'fs';
+import fs from 'fs/promises';
 import os from 'os';
 import nock from "nock";
-import { getPageData, saveFile, getFileName } from "../src/temp";
+import { NamesGenerator } from "../src/NamesGenerator";
+import { getLinksForDownloadingAndUpdateHtml } from "../src/temp1.js";
+import { downloadPageData } from "../src/temp.js";
+import * as cheerio from 'cheerio';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -17,33 +20,71 @@ nock.disableNetConnect();
 let tempFolder;
 
 beforeEach(async () => {
-    await fs.mkdtemp(path.join(os.tmpdir(), 'page-loader-'), (err, folder) => {
-        if (err) throw err;
-        tempFolder = folder;
-    });
-});
+    tempFolder = await fs.mkdtemp(path.join(os.tmpdir(), 'page-loader-'));
+})
 
-console.log('global', tempFolder)
+// test('Test save file', async () => {
+//     const testFileName = 'test-file.html';
+//     const testText = 'test';
+//
+//     const returnValue = await saveFile(testFileName, testText, tempFolder);
+//
+//     const fileData = await fs.readFile(path.join(tempFolder, testFileName), 'utf8');
+//
+//     expect(returnValue).toBe(path.join(tempFolder, testFileName));
+//     expect(fileData).toBe(testText);
+// })
+//
+// test('Test get name', () => {
+//     const testUrl = 'https://ru.hexlet.io/courses';
+//     expect(getName(testUrl)).toBe('ru-hexlet-io-courses');
+// })
 
 test('Test main flow', async () => {
+    const testUrl = 'https://ru.hexlet.io/courses';
 
-    const responseData = 'HTML & CSS & JS';
-    const url = 'https://ru.hexlet.io/courses';
-    const fileName = getFileName(url);
+    // Expected values
+    const expectedFileName = 'ru-hexlet-io-courses.html';
+    const expectedFolderName = 'ru-hexlet-io-courses_files';
+    const expectedResponseData = await fs.readFile(getFixturePath('test-html-file_before.html'), 'utf8');
+    const expectedLinksForDownloading = [
+        'https://ru.hexlet.io/assets/application.css',
+        'https://ru.hexlet.io/courses.html',
+        'https://ru.hexlet.io/assets/professions/nodejs.png',
+        'https://ru.hexlet.io/packs/js/runtime.js'
+    ];
+    const expectedDownloadedFileNames = [
+        'ru-hexlet-io-assets-application.css',
+        'ru-hexlet-io-courses.html',
+        'ru-hexlet-io-assets-professions-nodejs.png',
+        'ru-hexlet-io-packs-js-runtime.js'
+    ];
+
+    // Test values
+    const testUrlInstance = new URL(testUrl);
+    const testNameGeneratorInstance = new NamesGenerator(testUrlInstance);
+
+    const testFileName = testNameGeneratorInstance.getPageName();
+    const testFolderName = testNameGeneratorInstance.getFolderName();
+
+    expect(testFileName).toEqual(expectedFileName);
+    expect(testFolderName).toEqual(expectedFolderName);
 
     const scope = nock('https://ru.hexlet.io')
         .get('/courses')
-        .reply(200, responseData);
+        .reply(200, expectedResponseData);
 
-    await getPageData(url);
-
-     await saveFile(url, responseData, tempFolder);
-
-    const isExist = fs.existsSync(path.join(tempFolder, fileName + '.html'));
-
-    console.log(isExist)
+    await downloadPageData(testUrl);
 
     expect(scope.isDone()).toBe(true);
+
+    const {
+        testLinksForDownloading,
+        testUpdatedLinksNames,
+        testUpdatedHtml
+    } = getLinksForDownloadingAndUpdateHtml(expectedResponseData, testUrlInstance.origin, testFolderName);
+
+    // expect(testLinksForDownloading).toEqual(expectedLinksForDownloading);
 })
 
 

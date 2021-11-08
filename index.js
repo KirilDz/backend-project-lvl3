@@ -1,13 +1,49 @@
-import { getPageData, saveFile } from "./src/temp.js";
-
-const testLogic = (url) => {
-    getPageData(url).then(data => {
-
-       saveFile(url, data.data);
-
-    }).catch(e => console.log(e));
-}
+// import { getPageData, saveFile, getName } from "./src/temp.js";
+import { NamesGenerator } from "./src/NamesGenerator.js";
+import fs from "fs/promises";
+import path, { dirname } from "path";
+import { fileURLToPath } from "url";
+import { getLinksForDownloadingAndUpdateHtml } from "./src/temp1.js";
+import * as cheerio from 'cheerio';
+import axios from "axios";
 
 const url = 'https://ru.hexlet.io/courses';
+const TEAMS_PAGE = 'https://ru.hexlet.io/teams';
 
-testLogic(url);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+
+export default async (url, folder) => {
+    const urlInstance = new URL(url);
+    const namesGeneratorInstance = new NamesGenerator(urlInstance);
+
+    const fileName = namesGeneratorInstance.getPageName();
+    const folderName = namesGeneratorInstance.getFolderName();
+
+    return fs.readFile(path.join(__dirname, '__fixtures__', 'test-html-file_before.html'), 'utf8')
+        .then(response => {
+            const { linksForDownloading, updatedLinksNames, updatedHtml } = getLinksForDownloadingAndUpdateHtml(response, urlInstance.origin, folderName);
+
+            console.log(linksForDownloading)
+            console.log(updatedLinksNames)
+            console.log(updatedHtml)
+                //
+                // fs.mkdir(folderName).then(() => {
+                //     for (const [index, link] of linksForDownloading.entries()) {
+                //         downloadImage(link).then((response) => {
+                //             const buffer = response.data;
+                //             fs.writeFile(path.join(folderName, updatedLinksNames[index]), buffer).then(() => console.log('saved'));
+                //         });
+                //     }
+                //
+                //     // downloadImage(testLink).then((response) => {
+                //     //     const buffer = response.data;
+                //     //     console.log('this is buffer', buffer)
+                //     //     fs.writeFile(path.join(folderName, updatedImageLinksNames[0]), buffer).then(() => console.log('saved'));
+                //     // }).catch(err => console.log('this is err', err));
+                // });
+                //
+                // fs.writeFile(fileName, updatedHtml).then(() => console.log('File has been saved'));
+        })
+}
