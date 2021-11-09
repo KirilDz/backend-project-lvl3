@@ -1,8 +1,9 @@
-import * as cheerio from 'cheerio';
+import cheerio from 'cheerio';
 import fs from 'fs/promises';
 import { fileURLToPath } from "url";
 import path, { dirname } from "path";
 import { NamesGenerator } from "./NamesGenerator.js";
+import debug from "debug";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -17,7 +18,6 @@ const filterLink = (base, link) => {
 
     return baseUrl.origin === urlForFilter.origin;
 }
-
 
 const getLinksForDownloadingAndUpdateHtml = async (page1, mainLink = 'https://ru.hexlet.io/courses', folderName = 'ru-hexlet-io-courses_files') => {
     const page = await getPage()
@@ -62,4 +62,4 @@ const getLinksForDownloadingAndUpdateHtml = async (page1, mainLink = 'https://ru
 
 
 
-getLinksForDownloading().then((res) => console.log(res))
+getLinksForDownloadingAndUpdateHtml().then((res) => console.log(res))

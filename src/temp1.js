@@ -3,8 +3,9 @@ import fs from 'fs/promises'
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import * as path from "path";
-import * as cheerio from "cheerio";
+import cheerio from "cheerio";
 import { NamesGenerator } from "./NamesGenerator.js";
+import debug from 'debug';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -12,6 +13,10 @@ const __dirname = dirname(__filename);
 const TEAMS_PAGE = 'https://ru.hexlet.io/teams';
 
 const filterLink = (baseUrlOrigin, link) => {
+    if (!link) {
+        return false;
+    }
+
     const urlForFilter = new URL(link, baseUrlOrigin);
 
     return baseUrlOrigin === urlForFilter.origin;

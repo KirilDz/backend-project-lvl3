@@ -47,6 +47,12 @@ test('Test main flow', async () => {
     const expectedFileName = 'ru-hexlet-io-courses.html';
     const expectedFolderName = 'ru-hexlet-io-courses_files';
     const expectedResponseData = await fs.readFile(getFixturePath('test-html-file_before.html'), 'utf8');
+    const HTMLAfter = await fs.readFile(getFixturePath('test-html-file_after.html'), 'utf8');
+    const splitedHTML = HTMLAfter.split('\n');
+    const expectedUpdatedHTML = splitedHTML.slice(0, splitedHTML.length-1).join('\n');
+
+    console.log(expectedUpdatedHTML)
+
     const expectedLinksForDownloading = [
         'https://ru.hexlet.io/assets/application.css',
         'https://ru.hexlet.io/courses.html',
@@ -79,12 +85,25 @@ test('Test main flow', async () => {
     expect(scope.isDone()).toBe(true);
 
     const {
-        testLinksForDownloading,
-        testUpdatedLinksNames,
-        testUpdatedHtml
+        linksForDownloading,
+        updatedLinksNames,
+        updatedHtml
     } = getLinksForDownloadingAndUpdateHtml(expectedResponseData, testUrlInstance.origin, testFolderName);
 
-    // expect(testLinksForDownloading).toEqual(expectedLinksForDownloading);
+    expect(linksForDownloading).toEqual(expectedLinksForDownloading);
+    expect(updatedLinksNames).toEqual(expectedDownloadedFileNames);
+    expect(updatedHtml).toEqual(expectedUpdatedHTML);
+
+    for (const link of linksForDownloading) {
+        const url = new URL(link);
+
+        const scope2 = nock(url.host)
+            .get(url.pathname)
+            .reply(200, );
+    }
+
+
+
 })
 
 
