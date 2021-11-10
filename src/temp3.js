@@ -59,7 +59,4 @@ const getLinksForDownloadingAndUpdateHtml = async (page1, mainLink = 'https://ru
     };
 }
 
-
-
-
 getLinksForDownloadingAndUpdateHtml().then((res) => console.log(res))

@@ -7,7 +7,7 @@ import os from 'os';
 import nock from "nock";
 import { NamesGenerator } from "../src/NamesGenerator";
 import { getLinksForDownloadingAndUpdateHtml } from "../src/temp1.js";
-import { downloadPageData } from "../src/temp.js";
+import { downloadPageData, downloadImage } from "../src/temp.js";
 import * as cheerio from 'cheerio';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -50,8 +50,9 @@ test('Test main flow', async () => {
     const HTMLAfter = await fs.readFile(getFixturePath('test-html-file_after.html'), 'utf8');
     const splitedHTML = HTMLAfter.split('\n');
     const expectedUpdatedHTML = splitedHTML.slice(0, splitedHTML.length-1).join('\n');
-
-    console.log(expectedUpdatedHTML)
+    const expectedImageData = await fs.readFile(getFixturePath('test-img-file.png'), null);
+    const expectedJsData = await fs.readFile(getFixturePath('test-javaScript-file.js'), 'utf8');
+    const expectedCssData = await fs.readFile(getFixturePath('test-css-file.css'), 'utf8');
 
     const expectedLinksForDownloading = [
         'https://ru.hexlet.io/assets/application.css',
@@ -99,10 +100,12 @@ test('Test main flow', async () => {
 
         const scope2 = nock(url.host)
             .get(url.pathname)
-            .reply(200, );
+            .reply(200, expectedImageData);
+
+        await downloadImage(link);
+
+        expect(scope2.isDone()).toBe(true);
     }
-
-
 
 })
 
