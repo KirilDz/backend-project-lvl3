@@ -1,11 +1,6 @@
 import axios from "axios";
 import fs from 'fs/promises';
-import * as path from "path";
-import { fileURLToPath } from "url";
-import { dirname, extname } from "path";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+import { extname } from "path";
 
 const downloadTextData = (url, name) => {
     return Promise.resolve(axios.get(url));
@@ -39,8 +34,6 @@ export const downloadData = (url) => {
 
     return defineDownloadMethod(url);
 }
-
-downloadData('https://ru.hexlet.io/teams').then((res) => console.log(res));
 
 
 

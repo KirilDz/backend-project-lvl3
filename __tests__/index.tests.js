@@ -1,5 +1,5 @@
 import { fileURLToPath } from 'url';
-import { dirname } from 'path';
+import { dirname, extname } from 'path';
 import { test, expect } from '@jest/globals';
 import * as path from "path";
 import fs from 'fs/promises';
@@ -7,8 +7,7 @@ import os from 'os';
 import nock from "nock";
 import { NamesGenerator } from "../src/NamesGenerator";
 import { getLinksForDownloadingAndUpdateHtml } from "../src/temp1.js";
-import { downloadPageData, downloadImage } from "../src/temp.js";
-import * as cheerio from 'cheerio';
+import { downloadData, saveData } from "../src/temp.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -23,23 +22,6 @@ beforeEach(async () => {
     tempFolder = await fs.mkdtemp(path.join(os.tmpdir(), 'page-loader-'));
 })
 
-// test('Test save file', async () => {
-//     const testFileName = 'test-file.html';
-//     const testText = 'test';
-//
-//     const returnValue = await saveFile(testFileName, testText, tempFolder);
-//
-//     const fileData = await fs.readFile(path.join(tempFolder, testFileName), 'utf8');
-//
-//     expect(returnValue).toBe(path.join(tempFolder, testFileName));
-//     expect(fileData).toBe(testText);
-// })
-//
-// test('Test get name', () => {
-//     const testUrl = 'https://ru.hexlet.io/courses';
-//     expect(getName(testUrl)).toBe('ru-hexlet-io-courses');
-// })
-
 test('Test main flow', async () => {
     const testUrl = 'https://ru.hexlet.io/courses';
 
@@ -47,12 +29,16 @@ test('Test main flow', async () => {
     const expectedFileName = 'ru-hexlet-io-courses.html';
     const expectedFolderName = 'ru-hexlet-io-courses_files';
     const expectedResponseData = await fs.readFile(getFixturePath('test-html-file_before.html'), 'utf8');
+    const expectedEditedHTMLFile = await fs.readFile(getFixturePath('test-html-file_after.html'), 'utf8');
     const HTMLAfter = await fs.readFile(getFixturePath('test-html-file_after.html'), 'utf8');
     const splitedHTML = HTMLAfter.split('\n');
     const expectedUpdatedHTML = splitedHTML.slice(0, splitedHTML.length-1).join('\n');
     const expectedImageData = await fs.readFile(getFixturePath('test-img-file.png'), null);
     const expectedJsData = await fs.readFile(getFixturePath('test-javaScript-file.js'), 'utf8');
     const expectedCssData = await fs.readFile(getFixturePath('test-css-file.css'), 'utf8');
+    const expectHTMLData = await fs.readFile(getFixturePath('test-html-file.html'), 'utf8');
+
+    const expectedFileData = [expectedCssData, expectHTMLData, expectedImageData, expectedJsData];
 
     const expectedLinksForDownloading = [
         'https://ru.hexlet.io/assets/application.css',
@@ -81,7 +67,7 @@ test('Test main flow', async () => {
         .get('/courses')
         .reply(200, expectedResponseData);
 
-    await downloadPageData(testUrl);
+    await downloadData(testUrl);
 
     expect(scope.isDone()).toBe(true);
 
@@ -95,16 +81,38 @@ test('Test main flow', async () => {
     expect(updatedLinksNames).toEqual(expectedDownloadedFileNames);
     expect(updatedHtml).toEqual(expectedUpdatedHTML);
 
-    for (const link of linksForDownloading) {
+    console.log(linksForDownloading)
+
+    for (const [index, link] of Object.entries(linksForDownloading)) {
         const url = new URL(link);
 
-        const scope2 = nock(url.host)
+        const scope2 = nock(url.origin)
             .get(url.pathname)
-            .reply(200, expectedImageData);
+            .reply(200, expectedFileData[index]);
 
-        await downloadImage(link);
+        await downloadData(link);
 
         expect(scope2.isDone()).toBe(true);
+    }
+
+    await fs.mkdir(path.join(tempFolder, testFolderName));
+
+    for (const [index ,data] of Object.entries(expectedFileData)) {
+        await saveData(path.join(tempFolder, testFolderName, updatedLinksNames[index]), data);
+    }
+
+    await saveData(path.join(tempFolder, expectedFileName), updatedHtml);
+
+    const wroteHTMLdata = await fs.readFile(path.join(tempFolder, expectedFileName), 'utf8');
+
+    expect(expectedEditedHTMLFile).toEqual(wroteHTMLdata + '\n');
+
+    for (const [index, updatedLinkName] of Object.entries(updatedLinksNames)) {
+        if (extname(updatedLinkName) !== '.png') {
+            const wroteData = await fs.readFile(path.join(tempFolder, testFolderName, updatedLinkName), 'utf8');
+
+            expect(wroteData).toEqual(expectedFileData[+index]);
+        }
     }
 
 })
