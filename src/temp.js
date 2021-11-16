@@ -1,15 +1,23 @@
 import axios from 'axios';
+import axiosDebugLog from 'axios-debug-log/enable.js';
 import fs from 'fs/promises';
-import * as path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname, extname } from 'path';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const downloadTextData = (url, name) => Promise.resolve(axios.get(url));
+const downloadTextData = (url, name) => Promise.resolve(axios.get(url)
+    .catch((err) => {
+        console.error(err);
+        throw new Error(`Error while downloading file: ${err}`);
+    }));
 
-const downloadImageData = (url) => Promise.resolve(axios.get(url, { responseType: 'arraybuffer' }));
+const downloadImageData = (url) => Promise.resolve(axios.get(url, { responseType: 'arraybuffer' })
+    .catch((err) => {
+        console.error(err);
+        throw new Error(`Error while downloading image: ${err}`);
+    }));
 
 const defineDownloadMethod = (url) => {
     switch (extname(url)) {
@@ -25,7 +33,11 @@ const defineDownloadMethod = (url) => {
 export const saveData = (path, data) => {
     const checkPath = extname(path) ? path : path + '.html';
 
-    return Promise.resolve(fs.writeFile(checkPath, data));
+    return Promise.resolve(fs.writeFile(checkPath, data)
+        .catch((err) => {
+            console.error(err);
+            throw new Error(`Error while saving data: ${err}`);
+        }));
 };
 
 export const downloadData = (url) => {
@@ -35,6 +47,3 @@ export const downloadData = (url) => {
 
     return defineDownloadMethod(url);
 };
-
-downloadData('https://ru.hexlet.io/teams')
-    .then((res) => console.log(res));
