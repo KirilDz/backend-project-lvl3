@@ -1,14 +1,19 @@
-import axios from "axios";
+import axios from 'axios';
+import axiosDebugLog from 'axios-debug-log/enable.js';
 import fs from 'fs/promises';
 import { extname } from "path";
 
-const downloadTextData = (url, name) => {
-    return Promise.resolve(axios.get(url));
-}
+const downloadTextData = (url, name) => Promise.resolve(axios.get(url)
+    .catch((err) => {
+        console.error(err);
+        throw new Error(`Error while downloading file: ${err}`);
+    }));
 
-const downloadImageData = (url) => {
-    return Promise.resolve(axios.get(url, { responseType: "arraybuffer" }));
-}
+const downloadImageData = (url) => Promise.resolve(axios.get(url, { responseType: 'arraybuffer' })
+    .catch((err) => {
+        console.error(err);
+        throw new Error(`Error while downloading image: ${err}`);
+    }));
 
 const defineDownloadMethod = (url) => {
     switch (extname(url)) {
@@ -19,13 +24,17 @@ const defineDownloadMethod = (url) => {
         default:
             return downloadTextData(url);
     }
-}
+};
 
 export const saveData = (path, data) => {
     const checkPath = extname(path) ? path : path + '.html';
 
-    return Promise.resolve(fs.writeFile(checkPath, data));
-}
+    return Promise.resolve(fs.writeFile(checkPath, data)
+        .catch((err) => {
+            console.error(err);
+            throw new Error(`Error while saving data: ${err}`);
+        }));
+};
 
 export const downloadData = (url) => {
     if (!url) {
@@ -33,19 +42,4 @@ export const downloadData = (url) => {
     }
 
     return defineDownloadMethod(url);
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+};
