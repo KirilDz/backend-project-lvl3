@@ -9,7 +9,6 @@ commander
     .option('-o, --output [dir]', 'output dir', '(default: "/home/user/current-dir")')
     .arguments('<url>')
     .action((url, options) => {
-        debug('Start', url, options);
         pageLoader(url, options.output).then(() => 'Started');
     });
 
