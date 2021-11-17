@@ -4,9 +4,6 @@ import { NamesGenerator } from './src/NamesGenerator.js';
 import getLinksForDownloadingAndUpdateHtml from './src/temp1.js';
 import { downloadData, saveData } from './src/downloads.js';
 
-const url = 'https://ru.hexlet.io/courses';
-const TEAMS_PAGE = 'https://ru.hexlet.io/teams';
-
 export default async (url, folder) => {
     const urlInstance = new URL(url);
     const namesGeneratorInstance = new NamesGenerator(urlInstance);
@@ -22,21 +19,17 @@ export default async (url, folder) => {
                 updatedHtml,
             } = getLinksForDownloadingAndUpdateHtml(response.data, urlInstance.origin, folderName);
 
-            fs.mkdir(folderName)
-                .then(() => {
-                    for (const [index, link] of linksForDownloading.entries()) {
-                        downloadData(link)
-                            .then((responseData) => {
-                                const { data } = responseData;
+            // return {
+            //     linksForDownloading,
+            //     updatedLinksNames,
+            //     updatedHtml,
+            // };
+        })
+        .then(() => {
 
-                                saveData(path.join(folderName, updatedLinksNames[index]), data)
-                                    .then(() => console.log('saved'));
-                            });
-                    }
-                });
+        })
+        .then(() => {
 
-            saveData(fileName, updatedHtml)
-                .then(() => console.log('File has been saved'));
         })
         .catch((err) => {
             console.error('This is global ERROR', err);

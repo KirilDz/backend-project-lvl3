@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import commander from 'commander';
 import debug from 'debug';
-import pageLoader from '../index.js';
+import pageLoader from '../index2.js';
 
 commander
     .version('0.0.1')
