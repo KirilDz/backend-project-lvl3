@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/prefer-default-export
 export class NamesGenerator {
     constructor(urlInstance) {
         this.urlInstance = urlInstance;
@@ -7,11 +6,13 @@ export class NamesGenerator {
     }
 
     getPageName() {
-        return `${this.urlInstance.hostname}${this.urlInstance.pathname}`.replace(this.symbolsForReplacingPageLink, '-') + '.html';
+        const name = `${this.urlInstance.hostname}${this.urlInstance.pathname}`;
+        return `${name.replace(this.symbolsForReplacingPageLink, '-')}.html`;
     }
 
     getFolderName() {
-        return `${this.urlInstance.hostname}${this.urlInstance.pathname}`.replace(this.symbolsForReplacingPageLink, '-') + '_files';
+        const name = `${this.urlInstance.hostname}${this.urlInstance.pathname}`;
+        return `${name.replace(this.symbolsForReplacingPageLink, '-')}_files`;
     }
 
     getImageName(src) {
@@ -20,4 +21,3 @@ export class NamesGenerator {
         return sourceInstance.host.replace(this.symbolsForReplacingPageLink, '-') + sourceInstance.pathname.replace(this.symbolsForReplacingImageLink, '-');
     }
 }
-
