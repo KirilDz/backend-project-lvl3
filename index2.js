@@ -3,7 +3,7 @@ import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { NamesGenerator } from './src/NamesGenerator.js';
 import getLinksForDownloadingAndUpdateHtml from './src/temp1.js';
-import { downloadData, saveData } from './src/downloads.js';
+import { downloadData, saveData, createDirectory } from './src/downloads.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -29,11 +29,13 @@ export default async (url, folder) => {
 
     downloadData(url)
         .then((response) => {
+            console.log('First then');
             pageData = getLinksForDownloadingAndUpdateHtml(response.data, urlInstance.origin, folderName);
 
-            return fs.mkdir(path.join(downloadFolderPath, folderName));
+            return createDirectory(path.join(downloadFolderPath, folderName));
         })
         .then(() => {
+            console.log('Second then');
             const {
                 linksForDownloading,
                 updatedLinksNames,
@@ -53,11 +55,6 @@ export default async (url, folder) => {
         })
         .then(() => console.log(path.join(__dirname, fileName)))
         .catch((err) => {
-            console.error('This is global ERROR', Object.keys(err));
-            console.log(err.code);
-            console.log(err.errno);
-            console.log(err.syscall);
-            console.log(err.path);
-            console.log(err);
+            console.error('This is global ERROR', err);
         });
 };

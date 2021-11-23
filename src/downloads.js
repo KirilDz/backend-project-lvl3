@@ -4,14 +4,17 @@ import fs from 'fs/promises';
 import { extname } from 'path';
 import { log } from 'debug';
 
-const downloadTextData = (url) => Promise.resolve(axios.get(url)
-    .catch((err) => {
-        throw new Error(err);
-    }));
+const downloadTextData = (url) => Promise.resolve(axios.get(url))
+    .catch((e) => {
+        console.log('from download text');
+        throw e;
+    });
 
-const downloadImageData = (url) => Promise.resolve(axios.get(url, { responseType: 'arraybuffer' }).catch((err) => {
-    throw new Error(err);
-}));
+const downloadImageData = (url) => Promise.resolve(axios.get(url, { responseType: 'arraybuffer' }))
+    .catch((e) => {
+        console.log('from download image');
+        throw e;
+    });
 
 const defineDownloadMethod = (url) => {
     switch (extname(url)) {
@@ -27,8 +30,17 @@ const defineDownloadMethod = (url) => {
 export const saveData = (path, data) => {
     const checkPath = extname(path) ? path : `${path}.html`;
 
-    return Promise.resolve(fs.writeFile(checkPath, data)).catch(e => {
-        throw new Error(e);
+    return Promise.resolve(fs.writeFile(checkPath, data))
+        .catch((e) => {
+            console.log('from save data block');
+            throw e;
+        });
+};
+
+export const createDirectory = (path) => {
+    return Promise.resolve(fs.mkdir(path)).catch((e) => {
+        console.log('From save data block');
+        throw e;
     });
 };
 
