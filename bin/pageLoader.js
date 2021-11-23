@@ -8,7 +8,7 @@ commander
     .description('Page loader utility')
     .option('-o, --output [dir]', 'output dir', '(default: "/home/user/current-dir")')
     .arguments('<url>')
-    .action((url, options) => {
+    .action((url, options = process.cwd()) => {
         pageLoader(url, options.output).then(() => 'Started');
     });
 

@@ -1,9 +1,9 @@
+// eslint-disable-next-line import/prefer-default-export
 export class NamesGenerator {
-    symbolsForReplacingPageLink = /[.\/]/gm;
-    symbolsForReplacingImageLink = /[\/]/gm;
-
     constructor(urlInstance) {
         this.urlInstance = urlInstance;
+        this.symbolsForReplacingPageLink = /[.\/]/gm;
+        this.symbolsForReplacingImageLink = /[\/]/gm;
     }
 
     getPageName() {
@@ -19,7 +19,5 @@ export class NamesGenerator {
 
         return sourceInstance.host.replace(this.symbolsForReplacingPageLink, '-') + sourceInstance.pathname.replace(this.symbolsForReplacingImageLink, '-');
     }
-
 }
-
 

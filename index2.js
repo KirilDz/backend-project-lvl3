@@ -15,9 +15,9 @@ export default async (url, folder) => {
     const fileName = namesGeneratorInstance.getPageName();
     const folderName = namesGeneratorInstance.getFolderName();
 
-    console.log(folder);
+    console.log(fileName);
 
-    // let pageData;
+    let pageData;
 
     // downloadData(url)
     //     .then((response) => {
