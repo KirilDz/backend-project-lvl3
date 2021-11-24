@@ -1,4 +1,3 @@
-import fs from 'fs/promises';
 import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { NamesGenerator } from './src/NamesGenerator.js';
@@ -55,6 +54,8 @@ export default async (url, folder) => {
         })
         .then(() => console.log(path.join(__dirname, fileName)))
         .catch((err) => {
-            console.error('This is global ERROR', err);
+            console.error('This is global ERROR');
+
+            console.error(err.errno)
         });
 };
