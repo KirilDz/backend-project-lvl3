@@ -28,13 +28,11 @@ export default async (url, folder) => {
 
     downloadData(url)
         .then((response) => {
-            console.log('First then');
             pageData = getLinksForDownloadingAndUpdateHtml(response.data, urlInstance.origin, folderName);
 
             return createDirectory(path.join(downloadFolderPath, folderName));
         })
         .then(() => {
-            console.log('Second then');
             const {
                 linksForDownloading,
                 updatedLinksNames,
@@ -56,6 +54,6 @@ export default async (url, folder) => {
         .catch((err) => {
             console.error('This is global ERROR');
 
-            console.error(err.errno)
+            console.log(err);
         });
 };

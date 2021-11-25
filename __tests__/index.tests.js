@@ -22,6 +22,10 @@ beforeEach(async () => {
     tempFolder = await fs.mkdtemp(path.join(os.tmpdir(), 'page-loader-'));
 });
 
+test('exeptions', async () => {
+
+});
+
 test('main flow', async () => {
     const testUrl = 'https://ru.hexlet.io/courses';
 
