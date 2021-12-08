@@ -53,7 +53,7 @@ export default async (url, folder) => {
         .then(() => console.log(path.join(__dirname, fileName)))
         .catch((err) => {
             console.error('This is global ERROR');
-
             console.log(err);
+            return 'error';
         });
 };

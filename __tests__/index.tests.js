@@ -8,6 +8,7 @@ import nock from 'nock';
 import { NamesGenerator } from '../src/NamesGenerator';
 import getLinksForDownloadingAndUpdateHtml from '../src/temp1.js';
 import { downloadData, saveData } from '../src/downloads.js';
+import pageLoader from '../index2.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -23,7 +24,12 @@ beforeEach(async () => {
 });
 
 test('exeptions', async () => {
-
+    expect.assertions(0);
+    try {
+        await pageLoader('https://gaaglle.com', process.cwd());
+    } catch (e) {
+        expect(e).toMatch(e);
+    }
 });
 
 test('main flow', async () => {
