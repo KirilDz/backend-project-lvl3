@@ -1,4 +1,4 @@
-export class NamesGenerator {
+export default class NamesGenerator {
     constructor(urlInstance) {
         this.urlInstance = urlInstance;
         this.symbolsForReplacingPageLink = /[.\/]/gm;

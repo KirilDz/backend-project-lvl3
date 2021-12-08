@@ -1,6 +1,6 @@
 import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
-import { NamesGenerator } from './src/NamesGenerator.js';
+import NamesGenerator from './src/NamesGenerator.js';
 import getLinksForDownloadingAndUpdateHtml from './src/temp1.js';
 import { downloadData, saveData, createDirectory } from './src/downloads.js';
 
