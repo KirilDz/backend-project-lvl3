@@ -1,5 +1,5 @@
 import cheerio from 'cheerio';
-import { NamesGenerator } from './NamesGenerator.js';
+import NamesGenerator from './NamesGenerator.js';
 
 const filterLink = (baseUrlOrigin, link) => {
     if (!link) {

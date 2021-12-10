@@ -5,7 +5,7 @@ import * as path from 'path';
 import fs from 'fs/promises';
 import os from 'os';
 import nock from 'nock';
-import { NamesGenerator } from '../src/NamesGenerator';
+import NamesGenerator from '../src/NamesGenerator.js';
 import getLinksForDownloadingAndUpdateHtml from '../src/temp1.js';
 import { downloadData, saveData } from '../src/downloads.js';
 import pageLoader from '../index2.js';
@@ -135,7 +135,6 @@ test('main flow', async () => {
         }
     }
 });
-
 
 
 
